@@ -113,7 +113,7 @@ public final class GraphicalConsole implements SerialConsole {
 			return;
 
 		synchronized (incomingQueue) {
-			incomingQueue.add(new Integer((int) c));
+			incomingQueue.add((int) c);
 		}
 	}
 

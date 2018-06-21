@@ -25,7 +25,9 @@ public class LotteryScheduler extends PriorityScheduler {
 	 * Allocate a new lottery scheduler.
 	 */
 	public LotteryScheduler() {
+		super();
 	}
+
 
 	/**
 	 * Allocate a new lottery thread queue.

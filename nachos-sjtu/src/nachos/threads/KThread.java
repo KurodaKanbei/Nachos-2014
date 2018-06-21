@@ -2,6 +2,8 @@ package nachos.threads;
 
 import nachos.machine.*;
 
+import javax.crypto.Mac;
+
 /**
  * A KThread is a thread that can be used to execute Nachos kernel code. Nachos
  * allows multiple threads to run concurrently.
@@ -53,7 +55,15 @@ public class KThread {
 	 * Allocate a new <tt>KThread</tt>. If this is the first <tt>KThread</tt>,
 	 * create an idle thread as well.
 	 */
+
+	private void init() {
+		boolean status = Machine.interrupt().disable();
+		joinQueue.acquire(this);
+		Machine.interrupt().restore(status);
+	}
+
 	public KThread() {
+		init();
 		if (currentThread != null) {
 			tcb = new TCB();
 		} else {
@@ -205,6 +215,12 @@ public class KThread {
 
 		currentThread.status = statusFinished;
 
+		KThread kThread = currentThread.joinQueue.nextThread();
+
+		while (kThread != null) {
+			kThread.ready();
+			kThread = currentThread.joinQueue.nextThread();
+		}
 		sleep();
 	}
 
@@ -283,10 +299,20 @@ public class KThread {
 	 * is not guaranteed to return. This thread must not be the current thread.
 	 */
 	public void join() {
+		if (status == statusFinished) {
+			return;
+		}
+
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
 
 		Lib.assertTrue(this != currentThread);
 
+		boolean status = Machine.interrupt().disable();
+
+		joinQueue.waitForAccess(KThread.currentThread());
+		KThread.sleep();
+
+		Machine.interrupt().restore(status);
 	}
 
 	/**
@@ -342,7 +368,7 @@ public class KThread {
 	 * from running to blocked or ready (depending on whether the thread is
 	 * sleeping or yielding).
 	 * 
-	 * @param finishing
+	 *
 	 *            <tt>true</tt> if the current thread is finished, and should be
 	 *            destroyed by the new thread.
 	 */
@@ -457,4 +483,6 @@ public class KThread {
 	private static KThread currentThread = null;
 	private static KThread toBeDestroyed = null;
 	private static KThread idleThread = null;
+
+	private ThreadQueue joinQueue = ThreadedKernel.scheduler.newThreadQueue(true);
 }

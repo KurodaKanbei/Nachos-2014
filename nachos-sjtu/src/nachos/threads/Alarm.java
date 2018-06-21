@@ -2,6 +2,9 @@ package nachos.threads;
 
 import nachos.machine.*;
 
+import java.util.PriorityQueue;
+import java.util.Queue;
+
 /**
  * Uses the hardware timer to provide preemption, and to allow threads to sleep
  * until a certain time.
@@ -15,11 +18,7 @@ public class Alarm {
 	 * <b>Note</b>: Nachos will not function correctly with more than one alarm.
 	 */
 	public Alarm() {
-		Machine.timer().setInterruptHandler(new Runnable() {
-			public void run() {
-				timerInterrupt();
-			}
-		});
+		Machine.timer().setInterruptHandler(this::timerInterrupt);
 	}
 
 	/**
@@ -29,6 +28,18 @@ public class Alarm {
 	 * should be run.
 	 */
 	public void timerInterrupt() {
+		boolean status = Machine.interrupt().disable();
+		while (!threadQueue.isEmpty()) {
+			WaitThread waitThread = threadQueue.peek();
+			assert waitThread != null;
+			if (waitThread.getWakeTime() <= Machine.timer().getTime()) {
+				waitThread.getKThread().ready();
+				threadQueue.poll();
+				continue;
+			}
+			break;
+		}
+		Machine.interrupt().restore(status);
 		KThread.yield();
 	}
 
@@ -47,8 +58,34 @@ public class Alarm {
 	 */
 	public void waitUntil(long x) {
 		// for now, cheat just to get something working (busy waiting is bad)
-		long wakeTime = Machine.timer().getTime() + x;
-		while (wakeTime > Machine.timer().getTime())
-			KThread.yield();
+		boolean status = Machine.interrupt().disable();
+		threadQueue.add(new WaitThread(KThread.currentThread(), Machine.timer().getTime() + x));
+		KThread.sleep();
+		Machine.interrupt().restore(status);
 	}
+
+	private class WaitThread implements Comparable<WaitThread> {
+		private KThread kThread;
+		private long wakeTime;
+
+		public WaitThread(KThread kThread, long wakeTime) {
+			this.kThread = kThread;
+			this.wakeTime = wakeTime;
+		}
+
+		public KThread getKThread() {
+			return kThread;
+		}
+
+		public long getWakeTime() {
+			return wakeTime;
+		}
+
+		@Override
+		public int compareTo(WaitThread rhs) {
+			return	Long.compare(wakeTime, rhs.getWakeTime());
+		}
+	}
+
+	private PriorityQueue<WaitThread> threadQueue = new PriorityQueue<>();
 }
