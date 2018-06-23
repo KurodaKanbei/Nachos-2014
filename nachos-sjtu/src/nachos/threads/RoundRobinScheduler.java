@@ -55,7 +55,7 @@ public class RoundRobinScheduler extends Scheduler {
 			if (waitQueue.isEmpty())
 				return null;
 
-			return (KThread) waitQueue.removeFirst();
+			return waitQueue.removeFirst();
 		}
 
 		/**
@@ -75,10 +75,9 @@ public class RoundRobinScheduler extends Scheduler {
 		public void print() {
 			Lib.assertTrue(Machine.interrupt().disabled());
 
-			for (Iterator<KThread> i = waitQueue.iterator(); i.hasNext();)
-				System.out.print(i.next() + " ");
+			for (KThread aWaitQueue : waitQueue) System.out.print(aWaitQueue + " ");
 		}
 
-		private LinkedList<KThread> waitQueue = new LinkedList<KThread>();
+		private LinkedList<KThread> waitQueue = new LinkedList<>();
 	}
 }

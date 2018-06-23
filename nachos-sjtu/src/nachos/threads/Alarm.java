@@ -3,7 +3,6 @@ package nachos.threads;
 import nachos.machine.*;
 
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 /**
  * Uses the hardware timer to provide preemption, and to allow threads to sleep

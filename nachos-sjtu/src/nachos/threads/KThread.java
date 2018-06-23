@@ -443,6 +443,7 @@ public class KThread {
 		Lib.debug(dbgThread, "Enter KThread.selfTest");
 
 		new KThread(new PingTest(1)).setName("forked thread").fork();
+		new KThread(new PingTest(2)).setName("forked thread").fork();
 		new PingTest(0).run();
 	}
 

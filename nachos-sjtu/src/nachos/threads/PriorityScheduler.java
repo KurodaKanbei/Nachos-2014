@@ -4,7 +4,6 @@ import nachos.machine.Lib;
 import nachos.machine.Machine;
 
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 
 /**
  * A scheduler that chooses threads based on their priorities.

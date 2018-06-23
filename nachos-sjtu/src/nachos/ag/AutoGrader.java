@@ -81,7 +81,7 @@ public class AutoGrader {
 	}
 
 	String getStringArgument(String key) {
-		String value = (String) testArgs.get(key);
+		String value = testArgs.get(key);
 		Lib.assertTrue(value != null, "getStringArgument(" + key
 				+ ") failed to find key");
 		return value;
