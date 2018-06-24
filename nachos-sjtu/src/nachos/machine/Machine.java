@@ -26,7 +26,6 @@ public final class Machine {
 
 		processArgs();
 
-		System.out.println(configFileName);
 		Config.load(configFileName);
 
 		// get the current directory (.)

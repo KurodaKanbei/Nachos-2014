@@ -28,7 +28,7 @@ public class BoatGrader extends BasicTestGrader{
         allIsDone();
     }
 
-    private void startTest(int adults, int children) {
+    public void startTest(int adults, int children) {
         adultsOahu = adults;
         childrenOahu = children;
         adultsMolokai = childrenMolokai = 0;

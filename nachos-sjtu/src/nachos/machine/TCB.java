@@ -242,9 +242,8 @@ public final class TCB {
 
 		try {
 			target.run();
-
 			// no way out of here without going throw one of the catch blocks
-			Lib.assertNotReached();
+			//Lib.assertNotReached();
 		} catch (ThreadDeath e) {
 			// make sure this TCB is being destroyed properly
 			if (!done) {

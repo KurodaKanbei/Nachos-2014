@@ -6,16 +6,21 @@ import nachos.machine.Lib;
 public class Boat {
 
 	public static void selfTest() {
-		BoatGrader b = new BoatGrader();
+
+		System.out.println("\n ***Testing Boats with only 1 children***");
+		new BoatGrader().startTest(0, 1);
 
 		System.out.println("\n ***Testing Boats with only 2 children***");
-		begin(0, 2, b);
+		new BoatGrader().startTest(0, 2);
+
+		System.out.println("\n ***Testing Boats with only 3 children***");
+		new BoatGrader().startTest(0, 3);
 
 		System.out.println("\n ***Testing Boats with 2 children, 1 adult***");
-		begin(1, 2, b);
+		new BoatGrader().startTest(1, 2);
 
-		System.out.println("\n ***Testing Boats with 3 children, 3 adults***");
-		begin(3, 3, b);
+		System.out.println("\n ***Testing Boats with 3 children, 3 adult***");
+		new BoatGrader().startTest(3, 3);
 	}
 
 	public static void begin(int adults, int children, BoatGrader b) {
@@ -54,7 +59,7 @@ public class Boat {
 			adultsA.sleep();
 		}
 		//critical region start
-		System.out.print(KThread.currentThread() + " on board");
+		System.out.println(KThread.currentThread() + " on board");
 		bg.AdultRowToMolokai();
 		boatA = false;
 		--adultsOnA;
@@ -71,11 +76,11 @@ public class Boat {
 			if (adultsOnA > 0) {
 				adultsA.wake();
 			}
-			while (!(childrenOnA < 2 && boatA)) {
+			while (!(childrenOnBoard < 2 && boatA)) {
 				childrenA.sleep();
 			}
 			if (childrenOnBoard == 0) {
-				System.out.println(KThread.currentThread() + " on board");
+				System.out.println(KThread.currentThread() + " on board as captain");
 				++childrenOnBoard;
 				childrenA.wake();
 				childrenOnBoat.sleep();
@@ -83,7 +88,7 @@ public class Boat {
 				Lib.debug('b', " two children to B");
 				childrenOnBoat.wake();
 			} else if (childrenOnBoard == 1) {
-				System.out.println(KThread.currentThread() + " on board");
+				System.out.println(KThread.currentThread() + " on board as passenger");
 				++childrenOnBoard;
 				bg.ChildRowToMolokai();
 				childrenOnBoat.wake();
@@ -97,10 +102,11 @@ public class Boat {
 			if (childrenOnBoard == 1) {
 				childrenB.sleep();
 			}
+			System.out.println(KThread.currentThread() + " on board as the sole man");
 			islandB.release();
 			bg.ChildRowToOahu();
 			Lib.debug('b', " one child to A");
-			islandB.acquire();
+			islandA.acquire();
 			++childrenOnA;
 			boatA = true;
 			islandA.release();
@@ -109,6 +115,7 @@ public class Boat {
 		islandA.acquire();
 		--childrenOnA;
 		islandA.release();
+		System.out.println(KThread.currentThread() + "on board");
 		bg.ChildRowToMolokai();
 		islandB.acquire();
 		islandB.release();
@@ -131,7 +138,7 @@ public class Boat {
 
 	private static BoatGrader bg;
 	private static int childrenOnA, adultsOnA, childrenOnBoard;
-	private static Lock islandA = new Lock(), islandB = new Lock();
+	private static Lock islandA = new Lock(), islandB = new Lock(), boat = new Lock();
 	private static Condition2 adultsA = new Condition2(islandA);
 	private static Condition2 childrenA = new Condition2(islandA), childrenB = new Condition2(islandB);
 	private static Condition2 childrenOnBoat = new Condition2(islandA);
