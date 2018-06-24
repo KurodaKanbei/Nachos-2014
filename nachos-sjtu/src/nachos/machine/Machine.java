@@ -26,6 +26,7 @@ public final class Machine {
 
 		processArgs();
 
+		System.out.println(configFileName);
 		Config.load(configFileName);
 
 		// get the current directory (.)
@@ -55,11 +56,7 @@ public final class Machine {
 
 		autoGrader = (AutoGrader) Lib.constructObject(autoGraderClassName);
 
-		new TCB().start(new Runnable() {
-			public void run() {
-				autoGrader.start(privilege);
-			}
-		});
+		new TCB().start(() -> autoGrader.start(privilege));
 	}
 
 	/**
@@ -148,6 +145,7 @@ public final class Machine {
 				else if (arg.equals("-[]")) {
 					Lib.assertTrue(i < args.length, "switch without argument");
 					configFileName = args[i++];
+					System.out.println("\n" + configFileName);
 				} else if (arg.equals("--")) {
 					Lib.assertTrue(i < args.length, "switch without argument");
 					autoGraderClassName = args[i++];

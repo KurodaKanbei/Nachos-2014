@@ -1,9 +1,9 @@
 package nachos.threads;
 
 import nachos.ag.BoatGrader;
+import nachos.machine.Lib;
 
 public class Boat {
-	static BoatGrader bg;
 
 	public static void selfTest() {
 		BoatGrader b = new BoatGrader();
@@ -28,15 +28,18 @@ public class Boat {
 		// Create threads here. See section 3.4 of the Nachos for Java
 		// Walkthrough linked from the projects page.
 
-		Runnable r = new Runnable() {
-			public void run() {
-				SampleItinerary();
-			}
-		};
-		KThread t = new KThread(r);
-		t.setName("Sample Boat Thread");
-		t.fork();
-
+		childrenOnBoard = 0;
+		adultsOnA = adults;
+		childrenOnA = children;
+		boatA = true;
+		Lib.debug('b', "boat test start");
+		for (int i = 0; i < adults; i++) {
+			new KThread(Boat::AdultItinerary).setName("Adult" + i).fork();
+		}
+		for (int i = 0; i < children; i++) {
+			new KThread(Boat::ChildItinerary).setName("Child" + i).fork();
+		}
+		done.P();
 	}
 
 	static void AdultItinerary() {
@@ -46,9 +49,70 @@ public class Boat {
 		 * bg.AdultRowToMolokai(); indicates that an adult has rowed the boat
 		 * across to Molokai
 		 */
+		islandA.acquire();
+		while (!(childrenOnA <= 1 && boatA)) {
+			adultsA.sleep();
+		}
+		//critical region start
+		System.out.print(KThread.currentThread() + " on board");
+		bg.AdultRowToMolokai();
+		boatA = false;
+		--adultsOnA;
+		islandA.release();
+		islandB.acquire();
+		childrenB.wake();
+		islandB.release();
+		//critical region end
 	}
 
 	static void ChildItinerary() {
+		while (adultsOnA + childrenOnA > 1) {
+			islandA.acquire();
+			if (adultsOnA > 0) {
+				adultsA.wake();
+			}
+			while (!(childrenOnA < 2 && boatA)) {
+				childrenA.sleep();
+			}
+			if (childrenOnBoard == 0) {
+				System.out.println(KThread.currentThread() + " on board");
+				++childrenOnBoard;
+				childrenA.wake();
+				childrenOnBoat.sleep();
+				bg.ChildRideToMolokai();
+				Lib.debug('b', " two children to B");
+				childrenOnBoat.wake();
+			} else if (childrenOnBoard == 1) {
+				System.out.println(KThread.currentThread() + " on board");
+				++childrenOnBoard;
+				bg.ChildRowToMolokai();
+				childrenOnBoat.wake();
+				childrenOnBoat.sleep();
+			}
+			--childrenOnBoard;
+			--childrenOnA;
+			boatA = false;
+			islandA.release();
+			islandB.acquire();
+			if (childrenOnBoard == 1) {
+				childrenB.sleep();
+			}
+			islandB.release();
+			bg.ChildRowToOahu();
+			Lib.debug('b', " one child to A");
+			islandB.acquire();
+			++childrenOnA;
+			boatA = true;
+			islandA.release();
+		}
+		Lib.debug('b', " one child to B");
+		islandA.acquire();
+		--childrenOnA;
+		islandA.release();
+		bg.ChildRowToMolokai();
+		islandB.acquire();
+		islandB.release();
+		done.V();
 	}
 
 	static void SampleItinerary() {
@@ -64,4 +128,13 @@ public class Boat {
 		bg.ChildRideToMolokai();
 	}
 
+
+	private static BoatGrader bg;
+	private static int childrenOnA, adultsOnA, childrenOnBoard;
+	private static Lock islandA = new Lock(), islandB = new Lock();
+	private static Condition2 adultsA = new Condition2(islandA);
+	private static Condition2 childrenA = new Condition2(islandA), childrenB = new Condition2(islandB);
+	private static Condition2 childrenOnBoat = new Condition2(islandA);
+	private static Semaphore done = new Semaphore(0);
+	private static boolean boatA;
 }
