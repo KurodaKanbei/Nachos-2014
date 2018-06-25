@@ -36,7 +36,7 @@ public final class TCB {
 	 * @param privilege
 	 *            encapsulates privileged access to the Nachos machine.
 	 */
-	public static void givePrivilege(Privilege privilege) {
+	static void givePrivilege(Privilege privilege) {
 		TCB.privilege = privilege;
 		privilege.tcb = new TCBPrivilege();
 	}
@@ -94,16 +94,10 @@ public final class TCB {
 			 * If this is not the first TCB, we have to make a new Java thread
 			 * to run it. Creating Java threads is a privileged operation.
 			 */
-			tcbTarget = new Runnable() {
-				public void run() {
-					threadroot();
-				}
-			};
+			tcbTarget = this::threadroot;
 
-			privilege.doPrivileged(new Runnable() {
-				public void run() {
-					javaThread = new Thread(tcbTarget);
-				}
+			privilege.doPrivileged(() -> {
+				javaThread = new Thread(tcbTarget);
 			});
 
 			/*
@@ -201,7 +195,7 @@ public final class TCB {
 	/**
 	 * Destroy all TCBs and exit Nachos. Same as <tt>Machine.terminate()</tt>.
 	 */
-	public static void die() {
+	static void die() {
 		privilege.exit(0);
 	}
 
@@ -297,7 +291,7 @@ public final class TCB {
 		while (!running) {
 			try {
 				wait();
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ignored) {
 			}
 		}
 	}
@@ -338,7 +332,7 @@ public final class TCB {
 	 * The maximum number of started, non-destroyed TCB's that can be in
 	 * existence.
 	 */
-	public static final int maxThreads = 250;
+	private static final int maxThreads = 250;
 
 	/**
 	 * A reference to the currently running TCB. It is initialized to
@@ -367,7 +361,7 @@ public final class TCB {
 	 * TCB objects in <tt>runningThreads</tt> to zero, Nachos exits, so once the
 	 * first TCB is created, this vector is basically never empty.
 	 */
-	private static Vector<TCB> runningThreads = new Vector<TCB>();
+	private static Vector<TCB> runningThreads = new Vector<>();
 
 	private static Privilege privilege;
 	private static KThread toBeDestroyed = null;

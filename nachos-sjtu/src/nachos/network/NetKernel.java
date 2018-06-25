@@ -35,11 +35,7 @@ public class NetKernel extends VMKernel {
 	public void selfTest() {
 		super.selfTest();
 
-		KThread serverThread = new KThread(new Runnable() {
-			public void run() {
-				pingServer();
-			}
-		});
+		KThread serverThread = new KThread(this::pingServer);
 
 		serverThread.fork();
 

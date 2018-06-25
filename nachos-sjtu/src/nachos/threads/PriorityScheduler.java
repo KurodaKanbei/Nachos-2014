@@ -7,20 +7,20 @@ import java.util.LinkedList;
 
 /**
  * A scheduler that chooses threads based on their priorities.
- * 
+ *
  * <p>
  * A priority scheduler associates a priority with each thread. The next thread
  * to be dequeued is always a thread with priority no less than any other
  * waiting thread's priority. Like a round-robin scheduler, the thread that is
  * dequeued is, among all the threads of the same (highest) priority, the thread
  * that has been waiting longest.
- * 
+ *
  * <p>
  * Essentially, a priority scheduler gives access in a round-robin fassion to
  * all the highest-priority threads, and ignores all other threads. This has the
  * potential to starve a thread if there's always a thread waiting with higher
  * priority.
- * 
+ *
  * <p>
  * A priority scheduler must partially solve the priority inversion problem; in
  * particular, priority must be donated through locks, and through joins.
@@ -34,7 +34,7 @@ public class PriorityScheduler extends Scheduler {
 
 	/**
 	 * Allocate a new priority thread queue.
-	 * 
+	 *
 	 * @param transferPriority
 	 *            <tt>true</tt> if this queue should transfer priority from
 	 *            waiting threads to the owning thread.
@@ -114,7 +114,7 @@ public class PriorityScheduler extends Scheduler {
 
 	/**
 	 * Return the scheduling state of the specified thread.
-	 * 
+	 *
 	 * @param thread
 	 *            the thread whose scheduling state to return.
 	 * @return the scheduling state of the specified thread.
@@ -164,7 +164,7 @@ public class PriorityScheduler extends Scheduler {
 		/**
 		 * Return the next thread that <tt>nextThread()</tt> would return,
 		 * without modifying the state of this queue.
-		 * 
+		 *
 		 * @return the next thread that <tt>nextThread()</tt> would return.
 		 */
 
@@ -207,7 +207,7 @@ public class PriorityScheduler extends Scheduler {
 	 * The scheduling state of a thread. This should include the thread's
 	 * priority, its effective priority, any objects it owns, and the queue it's
 	 * waiting for, if any.
-	 * 
+	 *
 	 * @see nachos.threads.KThread#schedulingState
 	 */
 	protected class ThreadState {
@@ -219,7 +219,7 @@ public class PriorityScheduler extends Scheduler {
 		/**
 		 * Allocate a new <tt>ThreadState</tt> object and associate it with the
 		 * specified thread.
-		 * 
+		 *
 		 * @param thread
 		 *            the thread this state belongs to.
 		 */
@@ -233,7 +233,7 @@ public class PriorityScheduler extends Scheduler {
 
 		/**
 		 * Return the priority of the associated thread.
-		 * 
+		 *
 		 * @return the priority of the associated thread.
 		 */
 		public int getPriority() {
@@ -242,7 +242,7 @@ public class PriorityScheduler extends Scheduler {
 
 		/**
 		 * Return the effective priority of the associated thread.
-		 * 
+		 *
 		 * @return the effective priority of the associated thread.
 		 */
 		public int getEffectivePriority() {
@@ -275,7 +275,7 @@ public class PriorityScheduler extends Scheduler {
 
 		/**
 		 * Set the priority of the associated thread to the specified value.
-		 * 
+		 *
 		 * @param priority
 		 *            the new priority.
 		 */
@@ -297,10 +297,10 @@ public class PriorityScheduler extends Scheduler {
 		 * The associated thread is therefore waiting for access to the resource
 		 * guarded by <tt>waitQueue</tt>. This method is only called if the
 		 * associated thread cannot immediately obtain access.
-		 * 
+		 *
 		 * @param waitQueue
 		 *            the queue that the associated thread is now waiting on.
-		 * 
+		 *
 		 * @see nachos.threads.ThreadQueue#waitForAccess
 		 */
 		public void waitForAccess(PriorityQueue waitQueue) {
@@ -320,7 +320,7 @@ public class PriorityScheduler extends Scheduler {
 		 * <tt>acquire(thread)</tt> being invoked on <tt>waitQueue</tt> (where
 		 * <tt>thread</tt> is the associated thread), or as a result of
 		 * <tt>nextThread()</tt> being invoked on <tt>waitQueue</tt>.
-		 * 
+		 *
 		 * @see nachos.threads.ThreadQueue#acquire
 		 * @see nachos.threads.ThreadQueue#nextThread
 		 */
@@ -336,11 +336,10 @@ public class PriorityScheduler extends Scheduler {
 		/** The thread with which this object is associated. */
 		protected KThread thread;
 		/** The priority of the associated thread. */
-		protected int priority = priorityDefault;
-		protected int effectivePriority;
-		protected LinkedList<PriorityQueue> holdList = new LinkedList<>();
-		protected PriorityQueue belongTo;
-		protected long enterTime;
-
+		int priority = priorityDefault;
+		int effectivePriority;
+		LinkedList<PriorityQueue> holdList = new LinkedList<>();
+		PriorityQueue belongTo;
+		long enterTime;
 	}
 }

@@ -3,7 +3,6 @@ package nachos.threads;
 import nachos.machine.*;
 
 import java.util.LinkedList;
-import java.util.Iterator;
 
 /**
  * A round-robin scheduler tracks waiting threads in FIFO queues, implemented

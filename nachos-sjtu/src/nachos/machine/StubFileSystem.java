@@ -23,7 +23,7 @@ public class StubFileSystem implements FileSystem {
 	 * @param directory
 	 *            the root directory of the stub file system.
 	 */
-	public StubFileSystem(Privilege privilege, File directory) {
+	StubFileSystem(Privilege privilege, File directory) {
 		this.privilege = privilege;
 		this.directory = directory;
 	}

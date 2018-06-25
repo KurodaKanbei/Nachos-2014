@@ -62,7 +62,7 @@ public class Condition {
 	public Condition(Lock conditionLock) {
 		this.conditionLock = conditionLock;
 
-		waitQueue = new LinkedList<Semaphore>();
+		waitQueue = new LinkedList<>();
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class Condition {
 		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 
 		if (!waitQueue.isEmpty())
-			((Semaphore) waitQueue.removeFirst()).V();
+			(waitQueue.removeFirst()).V();
 	}
 
 	/**
