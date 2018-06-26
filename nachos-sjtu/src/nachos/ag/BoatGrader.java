@@ -2,6 +2,7 @@ package nachos.ag;
 
 import nachos.machine.Lib;
 import nachos.threads.Boat;
+import nachos.threads.Boat2;
 import nachos.threads.KThread;
 
 import java.util.Random;
@@ -29,6 +30,13 @@ public class BoatGrader extends BasicTestGrader{
     }
 
     public void startTest(int adults, int children) {
+        adultsOahu = adults;
+        childrenOahu = children;
+        adultsMolokai = childrenMolokai = 0;
+        Boat2.begin(adults, children, this);
+    }
+
+    public void boatTest(int adults, int children) {
         adultsOahu = adults;
         childrenOahu = children;
         adultsMolokai = childrenMolokai = 0;

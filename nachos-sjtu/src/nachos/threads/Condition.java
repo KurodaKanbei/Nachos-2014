@@ -106,8 +106,11 @@ public class Condition {
 	public void wakeAll() {
 		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 
-		while (!waitQueue.isEmpty())
+		int t = 0;
+		while (!waitQueue.isEmpty()) {
+			Lib.debug('w', String.valueOf(++t));
 			wake();
+		}
 	}
 
 	private Lock conditionLock;

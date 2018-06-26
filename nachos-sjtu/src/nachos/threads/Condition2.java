@@ -40,9 +40,8 @@ public class Condition2 {
 		KThread.sleep();
 		//Attention: the thread must sleep without holding the lock
 
-		Machine.interrupt().restore(status);
-
 		conditionLock.acquire();
+		Machine.interrupt().restore(status);
 	}
 
 	/**
