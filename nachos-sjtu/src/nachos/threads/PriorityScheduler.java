@@ -115,15 +115,15 @@ public class PriorityScheduler extends Scheduler {
 	/**
 	 * Return the scheduling state of the specified thread.
 	 *
-	 * @param thread
+	 * @param kThread
 	 *            the thread whose scheduling state to return.
 	 * @return the scheduling state of the specified thread.
 	 */
-	protected ThreadState getThreadState(KThread thread) {
-		if (thread.schedulingState == null)
-			thread.schedulingState = new ThreadState(thread);
+	protected ThreadState getThreadState(KThread kThread) {
+		if (kThread.schedulingState == null)
+			kThread.schedulingState = new ThreadState(kThread);
 
-		return (ThreadState) thread.schedulingState;
+		return (ThreadState) kThread.schedulingState;
 	}
 
 	/**
