@@ -3,6 +3,7 @@ package nachos.threads;
 import nachos.machine.Lib;
 import nachos.machine.Machine;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -19,9 +20,14 @@ public class MultiLevelScheduler extends Scheduler {
         private MultiLevelQueue() {
             shortQueue = new LinkedList<>();
             longQueue = new LinkedList<>();
+            startTime = new HashMap<>();
+            endTime = new HashMap<>();
         }
 
         private boolean isShort(KThread kThread) {
+            if (kThread == null) {
+                return false;
+            }
             if (!startTime.containsKey(kThread) || !endTime.containsKey(kThread)) {
                 return false;
             }
@@ -31,11 +37,14 @@ public class MultiLevelScheduler extends Scheduler {
         }
 
         private boolean isLong(KThread kThread) {
+            if (kThread == null) {
+                return false;
+            }
             if (!startTime.containsKey(kThread) || !endTime.containsKey(kThread)) {
                 return true;
             }
             Long s = startTime.get(kThread);
-            Long e = startTime.get(kThread);
+            Long e = endTime.get(kThread);
             return e - s >= 1000;
         }
 
