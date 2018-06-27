@@ -49,7 +49,7 @@ public class ThreadedKernel extends Kernel {
 		KThread.selfTest();
 		Semaphore.selfTest();
 		SynchList.selfTest();
-		Boat2.selfTest();
+		Boat.selfTest();
 	}
 
 	/**

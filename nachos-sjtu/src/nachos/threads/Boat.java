@@ -50,17 +50,11 @@ public class Boat {
     }
 
     private static void AdultItinerary() {
-        /*
-         * This is where you should put your solutions. Make calls to the
-         * BoatGrader to show that it is synchronized. For example:
-         * bg.AdultRowToMolokai(); indicates that an adult has rowed the boat
-         * across to Molokai
-         */
+        //critical region start
         islandA.acquire();
         while (!(childrenOnA <= 1 && boatA)) {
             adultsA.sleep();
         }
-        //critical region start
         System.out.println(KThread.currentThread() + " on board");
         bg.AdultRowToMolokai();
         boatA = false;
